@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Filter Page</title>
+
+  <!-- Montserrat Bold -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand:#ca2f2d;
+      --brand-hover:#a82826;
+      --bg:#f9f9f9;
+      --card:#ffffff;
+      --text:#111111;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --radius:12px;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      padding:32px;
+      font-family:'Montserrat',sans-serif;
+      font-weight:700;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+    }
+
+    .title{
+      font-size:24px;
+      margin:0 0 20px;
+      letter-spacing:0.2px;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      margin-bottom:18px;
+    }
+
+    select{
+      appearance:none;
+      padding:12px 16px;
+      font-size:14px;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:#fff;
+      outline:none;
+      min-width:160px;
+      transition:border-color .2s ease, box-shadow .2s ease;
+      font-weight:700;
+    }
+    select:focus{
+      border-color:var(--brand);
+      box-shadow:0 0 0 3px rgba(202,47,45,0.15);
+    }
+
+    .btn{
+      padding:12px 20px;
+      font-size:14px;
+      border:none;
+      border-radius:var(--radius);
+      color:#fff;
+      background:var(--brand);
+      cursor:pointer;
+      transition:background-color .15s ease, transform .03s ease;
+      letter-spacing:0.3px;
+    }
+    .btn:hover{ background:var(--brand-hover); }
+    .btn:active{ transform:translateY(1px); }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+      gap:14px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      transition:box-shadow .15s ease, transform .05s ease;
+    }
+    .card:hover{
+      box-shadow:0 6px 20px rgba(0,0,0,0.06);
+      transform:translateY(-1px);
+    }
+
+    .card .name{
+      font-size:16px;
+    }
+    .card .meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      font-size:11px;
+      background:#f3f4f6;
+      color:#374151;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+    }
+
+    .empty{
+      padding:18px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed var(--border);
+      border-radius:var(--radius);
+      background:#fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="title">Live Filter Example</h1>
+
+    <div class="controls">
+      <select id="filter1">
+        <option value="">All (Filter 1)</option>
+        <option value="a">Option A</option>
+        <option value="b">Option B</option>
+        <option value="c">Option C</option>
+        <option value="d">Option D</option>
+      </select>
+
+      <select id="filter2">
+        <option value="">All (Filter 2)</option>
+        <option value="a">Option A</option>
+        <option value="b">Option B</option>
+        <option value="c">Option C</option>
+        <option value="d">Option D</option>
+      </select>
+
+      <button class="btn" id="searchBtn" type="button">Search</button>
+    </div>
+
+    <div id="results" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No results found.</div>
+  </div>
+
+  <script>
+    // Example dataset — replace with your own
+    const DATA = [
+      { name:"Alpine Lakes", f1:"a", f2:"a" },
+      { name:"City Lights",  f1:"c", f2:"b" },
+      { name:"Hidden Trails",f1:"b", f2:"d" },
+      { name:"Coastal Roads",f1:"d", f2:"c" },
+      { name:"Forest Ridge", f1:"c", f2:"c" },
+      { name:"Desert Dunes", f1:"a", f2:"d" },
+      { name:"Old Town",     f1:"b", f2:"b" },
+      { name:"Harbor Walk",  f1:"d", f2:"a" }
+    ];
+
+    const $f1 = document.getElementById('filter1');
+    const $f2 = document.getElementById('filter2');
+    const $results = document.getElementById('results');
+    const $empty = document.getElementById('empty');
+    const $search = document.getElementById('searchBtn');
+
+    function render(list){
+      $results.innerHTML = '';
+      if (!list.length){
+        $empty.style.display = 'block';
+        return;
+      }
+      $empty.style.display = 'none';
+      list.forEach(item=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="name">${item.name}</div>
+          <div class="meta">
+            <span class="pill">F1: ${item.f1.toUpperCase()}</span>
+            <span class="pill">F2: ${item.f2.toUpperCase()}</span>
+          </div>
+        `;
+        $results.appendChild(card);
+      });
+    }
+
+    function applyFilters(){
+      const f1 = $f1.value;
+      const f2 = $f2.value;
+      const filtered = DATA.filter(x =>
+        (f1 === '' || x.f1 === f1) &&
+        (f2 === '' || x.f2 === f2)
+      );
+      render(filtered);
+    }
+
+    // Filter instantly on change or on button click
+    [$f1, $f2].forEach(sel => sel.addEventListener('change', applyFilters));
+    $search.addEventListener('click', applyFilters);
+
+    // Initial render
+    render(DATA);
+  </script>
+</body>
+</html>
