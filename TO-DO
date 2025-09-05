@@ -1,1 +1,11 @@
 - Introduce functionality for the script filters.
+      "Script: Cyrillic [привет]"
+      "Script: Brahmic (Southeast Asian) [สวัสดี]"
+      "Script: Brahmic (South Asian) [হ্যালো]"
+      "Script: Brahmic (Dravidian) [வணக்கம்]"
+      "Script: Arabic/Persian [مرحبًا]"
+      "Script: Tifinagh [ⵜⵉⴼⴰⵡⵉⵏ]"
+      "Script: Hebrew [שלום]"
+      "Script: Cherokee [ᎣᏏᏲ]"
+      "Script: Ge'ez [ምልካም እድል]"
+      "Script: Brahmic (Kawi) [ꦲꦭꦺꦴ]"
