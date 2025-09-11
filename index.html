@@ -217,99 +217,166 @@
   <script>
     // Dataset
     const DATA = [
-{ name: "Åland Islands", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Gen 3", "Camera: Gen 2", "Plate: EU"] }
-{ name: "Acrotiri and Dhekelia", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] }
-{ name: "Africa", tags: [] }  ← *if Africa was in original* — ignore if not
-{ name: "Albania", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] }
-{ name: "Andorra", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3"] }
-{ name: "Antarctica", tags: ["Southern Hemisphere", "Eastern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Tripod"] }
-{ name: "Argentina", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "Australia", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Austria", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Bangladesh", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam"] }
-{ name: "Belgium", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: red", "Plate: EU"] }
-{ name: "Bhutan", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] }
-{ name: "Bolivia", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "Botswana", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] }
-{ name: "Brazil", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "Bulgaria", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Canada", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign"] }
-{ name: "Chile", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "China", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] }
-{ name: "Colombia", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "Costa Rica", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Gen 4", "'Alto' stop sign"] }
-{ name: "Croatia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Czech Republic", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Dominican Republic", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "'Pare' stop sign"] }
-{ name: "Ecuador", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4", "'Pare' stop sign"] }
-{ name: "Egypt", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] }
-{ name: "Estonia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Eswatini", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] }
-{ name: "Faroe Islands", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] }
-{ name: "Finland", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "France", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Germany", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] }
-{ name: "Greece", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Greenland", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Plate: white, red border"] }
-{ name: "Guatemala", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Alto' stop sign", "Car: visible mirrors"] }
-{ name: "Hong Kong", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "India", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] }
-{ name: "Indonesia", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Ireland", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] }
-{ name: "Israel", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Car: black, long antenna (Russia car)"] }
-{ name: "Italy", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Japan", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Triangular stop sign", "Car: visible, low camera (Japan car)"] }
-{ name: "Kazakhstan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] }
-{ name: "Kenya", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: snorkel car"] }
-{ name: "Kyrgyzstan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] }
-{ name: "Laos", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] }
-{ name: "Latvia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Lesotho", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] }
-{ name: "Lithuania", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Luxembourg", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] }
-{ name: "Madagascar", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign"] }
-{ name: "Malta", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Plate: EU"] }
-{ name: "Malaysia", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Berhenti' stop sign", "'Awas' warning sign"] }
-{ name: "Monaco", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4"] }
-{ name: "Montenegro", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] }
-{ name: "Namibia", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] }
-{ name: "Netherlands", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] }
-{ name: "New Zealand", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Norway", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Peru", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "Philippines", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Poland", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Portugal", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Qatar", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Quebec (Canada)", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign"] }
-{ name: "Romania", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Russia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: black, long antenna (Russia car)"] }
-{ name: "Saint Pierre and Miquelon", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] }
-{ name: "San Marino", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] }
-{ name: "Senegal", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Serbia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4"] }
-{ name: "Singapore", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Slovakia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Plate: EU"] }
-{ name: "Slovenia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "South Africa", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "South Georgia and the South Sandwich Islands", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker"] }
-{ name: "South Korea", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker"] }
-{ name: "Spain", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Svalbard and Jan Mayen", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] }
-{ name: "Sweden", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] }
-{ name: "Switzerland", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam"] }
-{ name: "Taiwan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "Tanzania", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Tripod"] }
-{ name: "Tunisia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Follow car: white sedan", "Follow car: beige truck", "Follow car: white truck", "Follow car: black truck"] }
-{ name: "Turkey", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Dur' stop sign"] }
-{ name: "Uganda", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] }
-{ name: "Ukraine", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: red"] }
-{ name: "United Arab Emirates", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] }
-{ name: "United Kingdom", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam"] }
-{ name: "United States", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Word-based road signs"] }
-{ name: "Uruguay", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign"] }
-{ name: "Vanuatu", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign"] }
-{ name: "Vietnam", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Shit Cam"] }
+  // --- Europe ---
+  { name: "Albania", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+  { name: "Andorra", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3"] },
+  { name: "Austria", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Belgium", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: red", "Plate: EU"] },
+  { name: "Bulgaria", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Croatia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Czech Republic", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Denmark", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Faroe Islands", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
+  { name: "Estonia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Finland", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "France", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Germany", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
+  { name: "Greece", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Hungary", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
+  { name: "Iceland", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
+  { name: "Ireland", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
+  { name: "Italy", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Latvia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Liechtenstein", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
+  { name: "Lithuania", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Luxembourg", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
+  { name: "Malta", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Plate: EU"] },
+  { name: "Monaco", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4"] },
+  { name: "Montenegro", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+  { name: "Netherlands", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
+  { name: "North Macedonia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+  { name: "Norway", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+  { name: "Poland", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Portugal", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Romania", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Russia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: black, long antenna (Russia car)"] },
+  { name: "San Marino", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
+  { name: "Serbia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4"] },
+  { name: "Slovakia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Plate: EU"] },
+  { name: "Slovenia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Spain", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Sweden", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
+  { name: "Turkey", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Dur' stop sign"] },
+  { name: "Switzerland", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam"] },
+  { name: "Ukraine", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: red"] },
+  { name: "United Kingdom", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam"] },
+  { name: "Gibraltar", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3"] },
+  { name: "Jersey", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2"] },
+  { name: "Isle of Man", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Trekker"] },
+  { name: "Akrotiri and Dhekelia", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
+  { name: "Svalbard and Jan Mayen", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
+  { name: "Åland Islands", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Gen 3", "Camera: Gen 2", "Plate: EU"] },
+
+    // --- Africa ---
+  { name: "Botswana", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+  { name: "Egypt", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
+  { name: "Eswatini", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+  { name: "Réunion", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Plate: EU"] },
+  { name: "Ghana", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Car: bars, black duct tape"] },
+  { name: "Kenya", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: snorkel car"] },
+  { name: "Lesotho", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+  { name: "Madagascar", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign"] },
+  { name: "Mali", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Tripod"] },
+  { name: "Namibia", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
+  { name: "Nigeria", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Car: bars, yellow-black stripes", "Follow car: white truck"] },
+  { name: "Madeira", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Plate: EU"] },
+  { name: "Azores", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU"] },
+  { name: "Rwanda", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
+  { name: "São Tomé and Príncipe", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Shit Cam"] },
+  { name: "South Africa", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+  { name: "Senegal", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+  { name: "Canary Islands", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] },
+  { name: "Ceuta", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU"] },
+  { name: "Melilla", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU"] },
+  { name: "Tanzania", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Tripod"] },
+  { name: "Tunisia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Follow car: white sedan", "Follow car: beige truck", "Follow car: white truck", "Follow car: black truck"] },
+  { name: "Uganda", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+
+  // --- North America ---
+  { name: "Bermuda", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+  { name: "Canada", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign"] },
+  { name: "Quebec (Canada)", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign"] },
+  { name: "Costa Rica", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Gen 4", "'Alto' stop sign"] },
+  { name: "Curaçao", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+  { name: "Dominican Republic", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "'Pare' stop sign"] },
+  { name: "Martinique", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] },
+  { name: "Guatemala", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Alto' stop sign", "Car: visible mirrors"] },
+  { name: "Greenland", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Plate: white, red border"] },
+  { name: "Mexico", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Alto' stop sign"] },
+  { name: "Saint Pierre and Miquelon", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] },
+  { name: "Panama", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 4", "'Alto' stop sign"] },
+  { name: "Puerto Rico", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
+  { name: "United States", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Word-based road signs"] },
+  { name: "Oklahoma (United States)", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Word-based road signs"] },
+  { name: "North Carolina (United States)", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Word-based road signs"] },
+  { name: "United States Virgin Islands", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+
+  // --- South America ---
+{ name: "Argentina", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
+{ name: "Bolivia", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign"] },
+{ name: "Brazil", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
+{ name: "Chile", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
+{ name: "Colombia", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
+{ name: "Ecuador", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4", "'Pare' stop sign"] },
+{ name: "Falkland Islands", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker"] },
+{ name: "Peru", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
+{ name: "South Georgia and the South Sandwich Islands", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker"] },
+{ name: "Uruguay", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign"] },
+
+  // --- Asia ---
+{ name: "Bangladesh", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam"] },
+{ name: "Bhutan", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+{ name: "Cambodia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam"] },
+{ name: "China", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
+{ name: "Hong Kong", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Macau", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2"] },
+{ name: "India", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+      { name: "Telangana (India)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+      { name: "Andhra Pradesh (India)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+      { name: "Karnataka (India)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+      { name: "Tamil Nadu (India)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+      { name: "Kerala (India)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+      { name: "Jharkand (India)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
+{ name: "Indonesia", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Iraq", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
+{ name: "Israel", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Car: black, long antenna (Russia car)"] },
+{ name: "Palestine", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: black, long antenna (Russia car)"] },
+{ name: "Japan", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Triangular stop sign", "Car: visible, low camera (Japan car)"] },
+{ name: "Jordan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "Kazakhstan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
+{ name: "Kyrgyzstan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "Laos", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "Malaysia", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Berhenti' stop sign", "'Awas' warning sign"] },
+{ name: "Mongolia", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Car: bars, camping equipment", "Car: snorkel car"] },
+{ name: "Nepal", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Shit Cam"] },
+{ name: "Oman", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
+{ name: "Philippines", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Qatar", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Singapore", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "South Korea", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "Sri Lanka", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Low Cam", "Camera: Shit Cam", "Car: small red blur"] },
+      { name: "Eastern Province (Sri Lanka)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Low Cam", "Camera: Shit Cam", "Car: small red blur"] },
+      { name: "Northern Province (Sri Lanka)", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Low Cam", "Camera: Shit Cam", "Car: small red blur"] },
+{ name: "Taiwan", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Thailand", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "United Arab Emirates", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "British Indian Ocean Territory", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
+{ name: "Vietnam", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Shit Cam"] },
+{ name: "Christmas Island", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: pickup truck"] },
+{ name: "Cocos (Keeling) Islands", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
+
+
+  // --- Oceania ---
+{ name: "American Samoa", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "Australia", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Guam", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "New Zealand", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
+{ name: "Northern Mariana Islands", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
+{ name: "Pitcairn Islands", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
+{ name: "Vanuatu", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign"] },
+
+  // --- Antarctica ---
+{ name: "Antarctica", tags: ["Southern Hemisphere", "Eastern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Tripod"] },
     ];
 
     // All possible filters
