@@ -6,7 +6,6 @@
   <title>easyguessr</title>
   <!-- Favicon -->
   <link rel="icon" href="favicon.png" type="image/x-icon">
-
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
@@ -47,13 +46,40 @@
       max-width:980px;
       margin:0 auto;
     }
-      .theme-toggle {
+    .buttons-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      float: right;
+    }
+    .export-btn, .import-btn {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 400;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .export-btn:hover, .import-btn:hover {
+      border-color: var(--brand);
+    }
+    .export-btn:active, .import-btn:active {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+    .theme-toggle {
       position: relative;
       float: right;
       margin-bottom: 10px;
       font-size: 24px;
       cursor: pointer;
       user-select: none;
+      margin-left: 8px;
     }
     .title-container {
       display: flex;
@@ -110,12 +136,16 @@
       text-decoration:underline;
     }
     /* Filter buttons container */
-    .filters{
-      display:flex;
-      gap:8px;
-      margin-bottom:20px;
-      overflow:hidden;
-      white-space:nowrap;
+    .filters-container {
+      overflow-x: auto;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+    }
+    .filters {
+      display: flex;
+      gap: 8px;
+      white-space: nowrap;
+      padding-bottom: 8px;
     }
     .filter-btn{
       padding:8px 14px;
@@ -140,6 +170,21 @@
     .filter-btn.active:hover{
       background:var(--brand-hover);
       border-color:var(--brand-hover);
+    }
+    /* Custom scrollbar for filters */
+    .filters-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .filters-container::-webkit-scrollbar-track {
+      background: var(--bg);
+      border-radius: 4px;
+    }
+    .filters-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    .filters-container::-webkit-scrollbar-thumb:hover {
+      background: var(--brand);
     }
     /* Entries grid */
     .grid{
@@ -188,11 +233,41 @@
       background:var(--card);
       font-weight: 700;
     }
+    /* Country search bar */
+    .country-search-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .country-search {
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      width: 100%;
+      font-weight: 400;
+      background: var(--card);
+      color: var(--text);
+    }
+    .country-search::placeholder {
+      color: var(--muted);
+      font-weight: 400;
+    }
+    /* File input */
+    #fileInput {
+      display: none;
+    }
   </style>
 </head>
 <body class="dark">
   <div class="wrap">
-    <div id="themeToggle" class="theme-toggle">☀️</div>
+    <div class="buttons-container">
+      <button id="exportBtn" class="export-btn">Export</button>
+      <button id="importBtn" class="import-btn">Import</button>
+      <div id="themeToggle" class="theme-toggle">☀️</div>
+    </div>
     <div class="title-container">
       <img src="logo.png" alt="easyguessr logo" class="logo">
       <h1 class="title">easyguessr</h1>
@@ -202,158 +277,188 @@
       <input type="text" id="filterSearch" class="filter-search" placeholder="Search filters..." />
       <span id="clearFilters" class="clear-filters">Clear filters</span>
     </div>
-    <!-- Filter buttons -->
-    <div id="filters" class="filters"></div>
+    <!-- Filter buttons container (scrollable) -->
+    <div class="filters-container">
+      <div id="filters" class="filters"></div>
+    </div>
+    <!-- Country search bar -->
+    <div class="country-search-header">
+      <input type="text" id="countrySearch" class="country-search" placeholder="Search countries..." />
+    </div>
     <!-- Results -->
     <div id="results" class="grid"></div>
     <div id="empty" class="empty" style="display:none;">No results found.</div>
+    <input type="file" id="fileInput" accept=".txt" />
   </div>
   <script>
     // Dataset with flags
     const DATA = [
-  // --- Europe ---
-  { name: "Albania 🇦🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  { name: "Andorra 🇦🇩", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3"] },
-  { name: "Austria 🇦🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Belgium 🇧🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: red", "Plate: EU"] },
-  { name: "Bulgaria 🇧🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Croatia 🇭🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Czech Republic 🇨🇿", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Denmark 🇩🇰", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Faroe Islands 🇫🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
-  { name: "Estonia 🇪🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Finland 🇫🇮", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "France 🇫🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Germany 🇩🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
-  { name: "Greece 🇬🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Hungary 🇭🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
-  { name: "Iceland 🇮🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
-  { name: "Ireland 🇮🇪", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
-  { name: "Italy 🇮🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Latvia 🇱🇻", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Liechtenstein 🇱🇮", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
-  { name: "Lithuania 🇱🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Luxembourg 🇱🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
-  { name: "Malta 🇲🇹", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Plate: EU"] },
-  { name: "Monaco 🇲🇨", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4"] },
-  { name: "Montenegro 🇲🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  { name: "Netherlands 🇳🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU"] },
-  { name: "North Macedonia 🇲🇰", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  { name: "Norway 🇳🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-  { name: "Poland 🇵🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Portugal 🇵🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Romania 🇷🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Russia 🇷🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: black, long antenna (Russia car)"] },
-  { name: "San Marino 🇸🇲", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
-  { name: "Serbia 🇷🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4"] },
-  { name: "Slovakia 🇸🇰", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Plate: EU"] },
-  { name: "Slovenia 🇸🇮", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Spain 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Sweden 🇸🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Plate: EU"] },
-  { name: "Turkey 🇹🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Dur' stop sign"] },
-  { name: "Switzerland 🇨🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam"] },
-  { name: "Ukraine 🇺🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: red"] },
-  { name: "United Kingdom 🇬🇧", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam"] },
-  { name: "Gibraltar 🇬🇮", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3"] },
-  { name: "Jersey 🇯🇪", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2"] },
-  { name: "Isle of Man 🇮🇲", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Trekker"] },
-  { name: "Akrotiri and Dhekelia 🇬🇧", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
-  { name: "Svalbard and Jan Mayen 🇳🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
-  { name: "Åland Islands 🇦🇽", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Gen 3", "Camera: Gen 2", "Plate: EU"] },
-    // --- Africa ---
-  { name: "Botswana 🇧🇼", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  { name: "Egypt 🇪🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
-  { name: "Eswatini 🇸🇿", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  { name: "Réunion 🇷🇪", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Plate: EU"] },
-  { name: "Ghana 🇬🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Car: bars, black duct tape"] },
-  { name: "Kenya 🇰🇪", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Car: snorkel car"] },
-  { name: "Lesotho 🇱🇸", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  { name: "Madagascar 🇲🇬", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign"] },
-  { name: "Mali 🇲🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Tripod"] },
-  { name: "Namibia 🇳🇦", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
-  { name: "Nigeria 🇳🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Car: bars, yellow-black stripes", "Follow car: white truck"] },
-  { name: "Madeira 🇵🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Plate: EU"] },
-  { name: "Azores 🇵🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU"] },
-  { name: "Rwanda 🇷🇼", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
-  { name: "São Tomé and Príncipe 🇸🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Shit Cam"] },
-  { name: "South Africa 🇿🇦", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-  { name: "Senegal 🇸🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-  { name: "Canary Islands 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] },
-  { name: "Ceuta 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU"] },
-  { name: "Melilla 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU"] },
-  { name: "Tanzania 🇹🇿", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Tripod"] },
-  { name: "Tunisia 🇹🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Follow car: white sedan", "Follow car: beige truck", "Follow car: white truck", "Follow car: black truck"] },
-  { name: "Uganda 🇺🇬", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-  // --- North America ---
-{ name: "Bermuda 🇧🇲", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Canada 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign"] },
-{ name: "Quebec (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign"] },
-{ name: "Costa Rica 🇨🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Gen 4", "'Alto' stop sign"] },
-{ name: "Curaçao 🇨🇼", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Dominican Republic 🇩🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "'Pare' stop sign"] },
-{ name: "Martinique 🇲🇶", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] },
-{ name: "Guatemala 🇬🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Alto' stop sign", "Car: visible mirrors"] },
-{ name: "Greenland 🇬🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Plate: white, red border"] },
-{ name: "Mexico 🇲🇽", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Alto' stop sign"] },
-{ name: "Saint Pierre and Miquelon 🇵🇲", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU"] },
-{ name: "Panama 🇵🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 4", "'Alto' stop sign"] },
-{ name: "Puerto Rico 🇵🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4"] },
-{ name: "United States 🇺🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam", "Word-based road signs"] },
-{ name: "United States Virgin Islands 🇻🇮", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-  // --- South America ---
-{ name: "Argentina 🇦🇷", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
-{ name: "Bolivia 🇧🇴", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign"] },
-{ name: "Brazil 🇧🇷", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
-{ name: "Chile 🇨🇱", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
-{ name: "Colombia 🇨🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
-{ name: "Ecuador 🇪🇨", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4", "'Pare' stop sign"] },
-{ name: "Falkland Islands 🇫🇰", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker"] },
-{ name: "Peru 🇵🇪", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign"] },
-{ name: "South Georgia and the South Sandwich Islands 🇬🇸", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker"] },
-{ name: "Uruguay 🇺🇾", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign"] },
-  // --- Asia ---
-{ name: "Bangladesh 🇧🇩", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Shit Cam"] },
-{ name: "Bhutan 🇧🇹", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-{ name: "Cambodia 🇰🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam"] },
-{ name: "China 🇨🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
-{ name: "Hong Kong 🇭🇰", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Macau 🇲🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2"] },
-{ name: "India 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Shit Cam", "Camera: Gen 4"] },
-{ name: "Indonesia 🇮🇩", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Iraq 🇮🇶", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
-{ name: "Israel 🇮🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Car: black, long antenna (Russia car)"] },
-{ name: "Palestine 🇵🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: black, long antenna (Russia car)"] },
-{ name: "Japan 🇯🇵", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Triangular stop sign", "Car: visible, low camera (Japan car)"] },
-{ name: "Jordan 🇯🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Kazakhstan 🇰🇿", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
-{ name: "Kyrgyzstan 🇰🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Laos 🇱🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Malaysia 🇲🇾", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Berhenti' stop sign", "'Awas' warning sign"] },
-{ name: "Mongolia 🇲🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Car: bars, camping equipment", "Car: snorkel car"] },
-{ name: "Nepal 🇳🇵", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Shit Cam"] },
-{ name: "Oman 🇴🇲", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4"] },
-{ name: "Philippines 🇵🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Qatar 🇶🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Singapore 🇸🇬", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "South Korea 🇰🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Sri Lanka 🇱🇰", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Low Cam", "Camera: Shit Cam", "Car: small red blur"] },
-{ name: "Taiwan 🇹🇼", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Thailand 🇹🇭", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "United Arab Emirates 🇦🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "British Indian Ocean Territory 🇮🇴", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
-{ name: "Vietnam 🇻🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Shit Cam"] },
-{ name: "Christmas Island 🇨🇽", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Car: pickup truck"] },
-{ name: "Cocos (Keeling) Islands 🇨🇨", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3"] },
-  // --- Oceania ---
-{ name: "American Samoa 🇦🇸", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Australia 🇦🇺", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Guam 🇬🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "New Zealand 🇳🇿", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker"] },
-{ name: "Northern Mariana Islands 🇲🇵", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker"] },
-{ name: "Pitcairn Islands 🇵🇳", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker"] },
-{ name: "Vanuatu 🇻🇺", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign"] },
-  // --- Antarctica ---
-{ name: "Antarctica 🇦🇶", tags: ["Southern Hemisphere", "Eastern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Tripod"] },
+      // --- Europe ---
+      { name: "Albania 🇦🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      { name: "Andorra 🇦🇩", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      { name: "Austria 🇦🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Belgium 🇧🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: red", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Bulgaria 🇧🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Cyrillic (Здравей)"] },
+      { name: "Croatia 🇭🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Czech Republic 🇨🇿", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Denmark 🇩🇰", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Faroe Islands 🇫🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Estonia 🇪🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Finland 🇫🇮", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "France 🇫🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Germany 🇩🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Greece 🇬🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Greek (Γειά)"] },
+      { name: "Hungary 🇭🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Iceland 🇮🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Ireland 🇮🇪", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Italy 🇮🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Latvia 🇱🇻", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Liechtenstein 🇱🇮", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Lithuania 🇱🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Luxembourg 🇱🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Malta 🇲🇹", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Monaco 🇲🇨", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Montenegro 🇲🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Cyrillic (Здравей)", "Script: Latin (Hallo)"] },
+      { name: "Netherlands 🇳🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "North Macedonia 🇲🇰", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Cyrillic (Здравей)"] },
+      { name: "Norway 🇳🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Poland 🇵🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Portugal 🇵🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Romania 🇷🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Russia 🇷🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: black, long antenna (Russia car)", "Script: Cyrillic (Здравей)"] },
+      { name: "San Marino 🇸🇲", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Serbia 🇷🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Script: Cyrillic (Здравей)"] },
+      { name: "Slovakia 🇸🇰", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Slovenia 🇸🇮", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Gen 2", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Spain 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Sweden 🇸🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Turkey 🇹🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Dur' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Switzerland 🇨🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Script: Latin (Hallo)"] },
+      { name: "Ukraine 🇺🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Google Car: red", "Script: Cyrillic (Здравей)"] },
+      { name: "United Kingdom 🇬🇧", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Script: Latin (Hallo)"] },
+      { name: "Gibraltar 🇬🇮", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      { name: "Jersey 🇯🇪", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Script: Latin (Hallo)"] },
+      { name: "Isle of Man 🇮🇲", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Akrotiri and Dhekelia 🇬🇧", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Svalbard and Jan Mayen 🇳🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Åland Islands 🇦🇽", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Gen 3", "Camera: Gen 2", "Plate: EU", "Script: Latin (Hallo)"] },
+      // --- Africa ---
+      { name: "Botswana 🇧🇼", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      { name: "Egypt 🇪🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Script: Arabic (مرحبا)"] },
+      { name: "Eswatini 🇸🇿", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      { name: "Réunion 🇷🇪", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Ghana 🇬🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: bars, black duct tape", "Script: Latin (Hallo)"] },
+      { name: "Kenya 🇰🇪", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: snorkel car", "Script: Latin (Hallo)"] },
+      { name: "Lesotho 🇱🇸", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      { name: "Madagascar 🇲🇬", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign", "Script: Latin (Hallo)"] },
+      { name: "Mali 🇲🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Tripod", "Script: Latin (Hallo)"] },
+      { name: "Namibia 🇳🇦", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "Nigeria 🇳🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Google Car: bars, yellow-black stripes", "Follow car: white truck", "Script: Latin (Hallo)"] },
+      { name: "Madeira 🇵🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Azores 🇵🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Rwanda 🇷🇼", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "São Tomé and Príncipe 🇸🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Google Car: Shit Cam", "Script: Latin (Hallo)"] },
+      { name: "South Africa 🇿🇦", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Senegal 🇸🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Canary Islands 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Ceuta 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Melilla 🇪🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Tanzania 🇹🇿", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Camera: Tripod", "Script: Latin (Hallo)"] },
+      { name: "Tunisia 🇹🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Follow car: white sedan", "Follow car: beige truck", "Follow car: white truck", "Follow car: black truck", "Script: Arabic (مرحبا)"] },
+      { name: "Uganda 🇺🇬", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      // --- North America ---
+      { name: "Bermuda 🇧🇲", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Canada 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Quebec (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Arrêt' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Nunavut (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Inuktitut (ᐊᐃ)", "Script: Latin (Hallo)"] },
+      { name: "Northwest Territories (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Inuktitut (ᐊᐃ)", "Script: Latin (Hallo)"] },
+      { name: "Nunatsiavut (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Inuktitut (ᐊᐃ)", "Script: Latin (Hallo)"] },
+      { name: "Nunavik (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Inuktitut (ᐊᐃ)", "Script: Latin (Hallo)"] },
+      { name: "Alberta (Canada) 🇨🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Blackfoot (ᖳᖹᐧᒧᐧ)", "Script: Latin (Hallo)"] },
+      { name: "Oklahoma (USA) 🇺🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Alehwisdiha' stop sign", "Script: Cherokee (ᏙᎾᏓ)", "Script: Latin (Hallo)"] },
+      { name: "Montana (USA) 🇺🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Blackfoot (ᖳᖹᐧᒧᐧ)", "Script: Latin (Hallo)"] },
+      { name: "Costa Rica 🇨🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Gen 4", "'Alto' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Curaçao 🇨🇼", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Dominican Republic 🇩🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Martinique 🇫🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Guatemala 🇬🇹", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Alto' stop sign", "Google Car: visible mirrors", "Script: Latin (Hallo)"] },
+      { name: "Greenland 🇬🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Plate: white, red border", "Script: Latin (Hallo)"] },
+      { name: "Mexico 🇲🇽", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Alto' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Saint Pierre and Miquelon 🇵🇲", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Plate: EU", "Script: Latin (Hallo)"] },
+      { name: "Panama 🇵🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 4", "'Alto' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Puerto Rico 🇵🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Script: Latin (Hallo)"] },
+      { name: "United States 🇺🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Word-based road signs", "Script: Latin (Hallo)"] },
+      { name: "United States Virgin Islands 🇻🇮", tags: ["Left-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      // --- South America ---
+      { name: "Argentina 🇦🇷", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Bolivia 🇧🇴", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Brazil 🇧🇷", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Chile 🇨🇱", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Colombia 🇨🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Ecuador 🇪🇨", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "Falkland Islands 🇫🇰", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Peru 🇵🇪", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      { name: "South Georgia and the South Sandwich Islands 🇬🇸", tags: ["Left-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Uruguay 🇺🇾", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "'Pare' stop sign", "Script: Latin (Hallo)"] },
+      // --- Asia ---
+      { name: "Bangladesh 🇧🇩", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Google Car: Shit Cam", "Script: Bengali (নমস্কার)"] },
+      { name: "Bhutan 🇧🇹", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Dzongkha (བཀ་)"] },
+      { name: "Cambodia 🇰🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Script: Khmer (ជំរាបសួរ)"] },
+      { name: "China 🇨🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Script: Han (Simplified) (白猫)"] },
+      { name: "Hong Kong 🇭🇰", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Han (Traditional) (電腦)", "Script: Latin (Hallo)"] },
+      { name: "Macau 🇲🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Script: Han (Traditional) (電腦)", "Script: Latin (Hallo)"] },
+      { name: "India 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Devanagari (नमस्ते)"] },
+      { name: "Tamil Nadu (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Tamil (வணக்கம்)"] },
+      { name: "Kerala (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Malayalam (നമസ്കാരം)"] },
+      { name: "Karnataka (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Kannada (ನಮಸ್ಕಾರ)"] },
+      { name: "Andhra Pradesh (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Telugu (నమస్కారం)"] },
+      { name: "Telangana (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Telugu (నమస్కారం)"] },
+      { name: "Punjab (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Gurmukhi (ਸਤਿ)"] },
+      { name: "West Bengal (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Bengali-Assamese (নমস্কার)"] },
+      { name: "Assam (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Bengali-Assamese (নমস্কার)"] },
+      { name: "Tripura (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Bengali-Assamese (নমস্কার)"] },
+      { name: "Gujarat (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Gujarati (નમસ્તે)"] },
+      { name: "Odisha (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Script: Odia (ନମସ୍କାର)"] },
+      { name: "Jammu and Kashmir (India) 🇮🇳", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Google Car: Shit Cam", "Camera: Gen 4", "Perso-Arabic (همزه)"] },
+      { name: "Indonesia 🇮🇩", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Aceh (Indonesia) 🇮🇩", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Jawi (سلام)"] },
+      { name: "Iraq 🇮🇶", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Script: Arabic (مرحبا)"] },
+      { name: "Israel 🇮🇱", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Google Car: black, long antenna (Russia car)", "Script: Hebrew (שלום)"] },
+      { name: "Palestine 🇵🇸", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Google Car: black, long antenna (Russia car)", "Script: Arabic (مرحبا)"] },
+      { name: "Japan 🇯🇵", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Camera: Low Cam", "Triangular stop sign", "Google Car: visible, low camera (Japan car)", "Script: Kanji (黄色い傘)", "Script: Kana (キイロイカサ)"] },
+      { name: "Jordan 🇯🇴", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Arabic (مرحبا)"] },
+      { name: "Kazakhstan 🇰🇿", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Script: Cyrillic (Здравей)"] },
+      { name: "Kyrgyzstan 🇰🇬", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Cyrillic (Здравей)"] },
+      { name: "Laos 🇱🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Lao (ສະບາຍດີ)"] },
+      { name: "Malaysia 🇲🇾", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "'Berhenti' stop sign", "'Awas' warning sign", "Script: Latin (Hallo)"] },
+      { name: "Kelantan (Malaysia) 🇲🇾", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Jawi (سلام)"] },
+      { name: "Terengganu (Malaysia) 🇲🇾", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Jawi (سلام)"] },
+      { name: "Mongolia 🇲🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Camera: Gen 4", "Google Car: bars, camping equipment", "Google Car: snorkel car", "Script: Cyrillic (Здравей)"] },
+      { name: "Nepal 🇳🇵", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Google Car: Shit Cam", "Script: Devanagari (नमस्ते)"] },
+      { name: "Oman 🇴🇲", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Script: Arabic (مرحبا)"] },
+      { name: "Philippines 🇵🇭", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Qatar 🇶🇦", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 4", "Camera: Trekker", "Script: Arabic (مرحبا)"] },
+      { name: "Singapore 🇸🇬", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)", "Script: Han (Simplified) (白猫)"] },
+      { name: "South Korea 🇰🇷", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Trekker", "Script: Hangul (안녕)"] },
+      { name: "Sri Lanka 🇱🇰", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Low Cam", "Google Car: Shit Cam", "Google Car: small red blur", "Script: Sinhala (ආයුබෝවන්)"] },
+      { name: "Tamil Eelam (Sri Lanka) 🇱🇰", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Low Cam", "Google Car: Shit Cam", "Google Car: small red blur", "Script: Tamil (வணக்கம்)"] },
+      { name: "Taiwan 🇹🇼", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Han (Traditional) (電腦)"] },
+      { name: "Thailand 🇹🇭", tags: ["Left-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Thai (สวัสดี)"] },
+      { name: "United Arab Emirates 🇦🇪", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Arabic (مرحبا)"] },
+      { name: "British Indian Ocean Territory 🇮🇴", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Vietnam 🇻🇳", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Gen 4", "Google Car: Shit Cam", "Script: Latin (Hallo)"] },
+      { name: "Christmas Island 🇨🇽", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Google Car: pickup truck", "Script: Latin (Hallo)"] },
+      { name: "Cocos (Keeling) Islands 🇨🇨", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Script: Latin (Hallo)"] },
+      // --- Oceania ---
+      { name: "American Samoa 🇦🇸", tags: ["Right-hand traffic", "Southern Hemisphere", "Western Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Australia 🇦🇺", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Guam 🇬🇺", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "New Zealand 🇳🇿", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Gen 1", "Camera: Gen 2", "Camera: Gen 3", "Camera: Gen 4", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Northern Mariana Islands 🇲🇵", tags: ["Right-hand traffic", "Northern Hemisphere", "Eastern Hemisphere", "Camera: Gen 3", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Pitcairn Islands 🇵🇳", tags: ["Left-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Script: Latin (Hallo)"] },
+      { name: "Vanuatu 🇻🇺", tags: ["Right-hand traffic", "Southern Hemisphere", "Eastern Hemisphere", "Camera: Trekker", "Circular stop sign", "Script: Latin (Hallo)"] },
+      // --- Antarctica ---
+      { name: "Antarctica 🇦🇶", tags: ["Southern Hemisphere", "Eastern Hemisphere", "Western Hemisphere", "Camera: Trekker", "Camera: Tripod", "Script: Latin (Hallo)"] },
     ];
     // All possible filters
     const ALL_FILTERS = [
@@ -378,42 +483,86 @@
       "'Dur' stop sign",
       "'Alto' stop sign",
       "'Berhenti' stop sign",
+      "'Alehwisdiha' stop sign",
       "Circular stop sign",
       "Triangular stop sign",
       "Word-based road signs",
-      "Car: black, long antenna (Russia car)",
-      "Car: red",
-      "Car: visible, low camera (Japan car)",
-      "Car: bars, camping equipment",
-      "Car: bars, yellow-black stripes",
+      "Google Car: black, long antenna (Russia car)",
+      "Google Car: red",
+      "Google Car: visible, low camera (Japan car)",
+      "Google Car: bars, camping equipment",
+      "Google Car: bars, yellow-black stripes",
       "Follow car: white truck",
-      "Car: snorkel car",
-      "Car: small red blur",
-      "Car: bars, black duct tape",
-      "Car: visible mirrors",
-      "Car: pickup truck",
+      "Google Car: snorkel car",
+      "Google Car: small red blur",
+      "Google Car: bars, black duct tape",
+      "Google Car: visible mirrors",
+      "Google Car: pickup truck",
       "Plate: white, red border",
       "Follow car: black truck",
       "Follow car: beige truck",
       "Follow car: white sedan",
-    ]
+      "Script: Latin (Hallo)",
+      "Script: Cyrillic (Здравей)",
+      "Script: Arabic (مرحبا)",
+      "Script: Greek (Γειά)",
+      "Script: Han (Simplified) (白猫)",
+      "Script: Han (Traditional) (電腦)",
+      "Script: Kanji (黄色い傘)",
+      "Script: Kana (キイロイカサ)",
+      "Script: Hangul (안녕)",
+      "Script: Thai (สวัสดี)",
+      "Script: Bengali-Assamese (নমস্কার)",
+      "Script: Tamil (வணக்கம்)",
+      "Script: Sinhala (ආයුබෝවන්)",
+      "Script: Khmer (ជំរាបសួរ)",
+      "Script: Lao (ສະບາຍດີ)",
+      "Script: Dzongkha (བཀ་)",
+      "Script: Jawi (سلام)",
+      "Script: Hebrew (שלום)",
+      "Script: Devanagari (नमस्ते)",
+      "Script: Gurmukhi (ਸਤਿ)",
+      "Script: Malayalam (നമസ്കാരം)",
+      "Script: Telugu (నమస్కారం)",
+      "Script: Gujarati (નમસ્તે)",
+      "Script: Odia (ନମସ୍କାର)",
+      "Script: Inuktitut (ᐊᐃ)",
+      "Script: Cherokee (ᏙᎾᏓ)",
+      "Script: Kannada (ನಮಸ್ಕಾರ)",
+      "Script: Blackfoot (ᖳᖹᐧᒧᐧ)",
+      "Perso-Arabic (همزه)",
+      "Script: Arabic (مرحبا)",
+      // from here, all of those need to be assigned to country entries or subdivision entries
+      "Script: Cree (ᑖᓂᓯ)",
+      "Script: Ojibwe (ᓂᓐᑯᓯᐦᔅ)",
+      "Script: Dakelh (ᑕᗸᒡ)",
+      "Script: Lontara (ᨕᨊ)",
+      "Script: Javanese (ꦲꦤꦕꦫꦏ)",
+      "Script: Ol Chiki (ᱚᱞ ᱪᱮᱢᱮᱫ)",
+      "Script: Meitei (ꯃꯌꯦꯛ)",
+    ];
     const $filters = document.getElementById('filters');
     const $results = document.getElementById('results');
     const $empty = document.getElementById('empty');
     const $filterSearch = document.getElementById('filterSearch');
     const $clearFilters = document.getElementById('clearFilters');
+    const $countrySearch = document.getElementById('countrySearch');
+    const $exportBtn = document.getElementById('exportBtn');
+    const $importBtn = document.getElementById('importBtn');
+    const $fileInput = document.getElementById('fileInput');
     let selectedFilters = [];
-    function renderFilters(list){
+
+    function renderFilters(list) {
       $filters.innerHTML = '';
-      list.forEach(f=>{
+      list.forEach(f => {
         const btn = document.createElement('button');
         btn.className = 'filter-btn';
         btn.textContent = f;
         btn.dataset.filter = f;
         if (selectedFilters.includes(f)) btn.classList.add('active');
-        btn.addEventListener('click', ()=>{
-          if (selectedFilters.includes(f)){
-            selectedFilters = selectedFilters.filter(x=>x!==f);
+        btn.addEventListener('click', () => {
+          if (selectedFilters.includes(f)) {
+            selectedFilters = selectedFilters.filter(x => x !== f);
           } else {
             selectedFilters.push(f);
           }
@@ -424,62 +573,116 @@
         $filters.appendChild(btn);
       });
     }
-    function renderResults(list){
+
+    function renderResults(list) {
       $results.innerHTML = '';
-      if (!list.length){
+      if (!list.length) {
         $empty.style.display = 'block';
         return;
       }
       $empty.style.display = 'none';
-      // Sort list alphabetically by name
       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
-      list.forEach(item=>{
+      list.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
           <div class="name">${item.name}</div>
           <div class="meta">
-            ${item.tags.map(t=>`<span class="pill">${t}</span>`).join('')}
+            ${item.tags.map(t => `<span class="pill">${t}</span>`).join('')}
           </div>
         `;
         $results.appendChild(card);
       });
     }
-    function applyFilters(){
-      if (selectedFilters.length === 0){
-        renderResults(DATA);
-        return;
+
+    function applyFilters() {
+      let filtered = [...DATA];
+      if (selectedFilters.length > 0) {
+        filtered = filtered.filter(item =>
+          selectedFilters.every(f => item.tags.includes(f))
+        );
       }
-      const filtered = DATA.filter(item =>
-        selectedFilters.every(f => item.tags.includes(f))
-      );
+      const countryQuery = $countrySearch.value.trim().toLowerCase();
+      if (countryQuery) {
+        filtered = filtered.filter(item =>
+          item.name.toLowerCase().includes(countryQuery)
+        );
+      }
       renderResults(filtered);
     }
-    function getFilteredFilterList(){
+
+    function getFilteredFilterList() {
       const query = $filterSearch.value.trim().toLowerCase();
       if (!query) return ALL_FILTERS;
       return ALL_FILTERS.filter(f => f.toLowerCase().includes(query));
     }
-    function toggleClearFilters(){
+
+    function toggleClearFilters() {
       $clearFilters.style.display = selectedFilters.length > 0 ? 'inline' : 'none';
     }
-    $filterSearch.addEventListener('input', ()=>{
+
+    function exportFilters() {
+      const data = JSON.stringify(selectedFilters);
+      const blob = new Blob([data], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'easyguessr-filters.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      $exportBtn.style.background = 'var(--card)';
+      $exportBtn.style.color = 'var(--text)';
+    }
+
+    function importFilters(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (Array.isArray(data)) {
+            selectedFilters = data.filter(f => ALL_FILTERS.includes(f));
+            renderFilters(getFilteredFilterList());
+            applyFilters();
+            toggleClearFilters();
+          }
+        } catch (err) {
+          alert('Invalid filter file.');
+        }
+      };
+      reader.readAsText(file);
+      $importBtn.style.background = 'var(--card)';
+      $importBtn.style.color = 'var(--text)';
+    }
+
+    $filterSearch.addEventListener('input', () => {
       renderFilters(getFilteredFilterList());
     });
-    $clearFilters.addEventListener('click', ()=>{
+    $countrySearch.addEventListener('input', () => {
+      applyFilters();
+    });
+    $clearFilters.addEventListener('click', () => {
       selectedFilters = [];
       renderFilters(getFilteredFilterList());
       applyFilters();
       toggleClearFilters();
     });
+    $exportBtn.addEventListener('click', exportFilters);
+    $importBtn.addEventListener('click', () => $fileInput.click());
+    $fileInput.addEventListener('change', importFilters);
+
     // Init
     renderFilters(ALL_FILTERS);
     renderResults(DATA);
+
     const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
-  const isDark = document.body.classList.toggle('dark');
-  themeToggle.textContent = isDark ? '☀️' : '🌙';
-});
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
   </script>
 </body>
 </html>
