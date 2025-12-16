@@ -1,4 +1,6 @@
-About easyguessr (and GeoGuessr)
+<img width="125" height="149" alt="image" src="https://github.com/user-attachments/assets/2890c92a-995a-4d43-927f-cf283907b92f" />
+
+easyguessr
 -----------------------------------------------------------------------------------------------
 **GeoGuessr** is a game where the player is placed in a random location from Google Street View
 and has to mark where they are on the world map based on what they can see.
